@@ -1,13 +1,11 @@
 import React from 'react';
-import {Menu} from 'antd';
+import { Menu } from 'antd';
 import axios from 'axios';
 import { USER_SERVER } from '../../../../Config';
-import {useNavigate} from 'react-router-dom';
-import {useSelector} from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-const {Item} = Menu;
-
-function RightMenu({mode}) {
+function RightMenu({ mode }) {
     const navigate = useNavigate();
     const user = useSelector(state => state.user);
 
@@ -24,29 +22,28 @@ function RightMenu({mode}) {
             alert('Log Out Failed');
         }
     };
-    if (user.userData && !user.userData.isAuth) {
-        return (
-            <Menu mode={mode}>
-                <Menu.Item key="mail">
-                    <a href="/login">Signin</a>
-                </Menu.Item>
-                <Menu.Item key="app">
-                    <a href="/register">Signup</a>
-                </Menu.Item>
-            </Menu>
-        );
-    } else {
-        return (
-            <Menu mode={mode}>
-                <Menu.Item key="upload">
-                    <a href="/video/upload">Video</a>
-                </Menu.Item>
-                <Menu.Item key="logout">
-                    <a onClick={logoutHandler}>Logout</a>
-                </Menu.Item>
-            </Menu>
-        );
-    }
+
+    const items = user.userData && !user.userData.isAuth ? [
+        {
+            key: 'mail',
+            label: <a href="/login">Signin</a>,
+        },
+        {
+            key: 'app',
+            label: <a href="/register">Signup</a>,
+        },
+    ] : [
+        {
+            key: 'upload',
+            label: <a href="/video/upload">Video</a>,
+        },
+        {
+            key: 'logout',
+            label: <a onClick={logoutHandler}>Logout</a>,
+        },
+    ];
+
+    return <Menu mode={mode} items={items} />;
 }
 
 export default RightMenu;

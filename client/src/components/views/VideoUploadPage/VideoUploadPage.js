@@ -4,6 +4,7 @@ import { Typography, Button, Form, Input } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import Dropzone from 'react-dropzone';
 import { PlusOutlined } from '@ant-design/icons';  // Plus 아이콘 임포트
+import axios from 'axios';
 
 const { Title } = Typography;
 
@@ -64,6 +65,26 @@ function VideoUploadPage() {
   const onPrivateChange = (e) => {setPrivate(e.target.value)};
   const onCategoryChange = (e) => {setCatetory(e.target.value)};
 
+  const onDrop = async(files) => {
+    let formData = new FormData;
+    // 서버로 보낼 때 같이 보내기 위한 header
+    const config = {
+      header : {'content-type' : 'multipart/form-data'}
+    };
+    formData.append("file", files[0]);
+
+    try {
+      // 서버로 파일 전송
+      const response = await axios.post('/api/video/uploadfiles', formData, config);
+    
+      // 성공적으로 업로드된 후 처리할 코드
+      console.log('File uploaded successfully:', response.data);
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  }
+
   return (
     <VideoDiv className='content'>
       <TitleDiv>
@@ -72,7 +93,7 @@ function VideoUploadPage() {
       <Form>
         <MediaDiv>
           {/* Dropzone */}
-          <Dropzone onDrop multiple maxSize>
+          <Dropzone onDrop={onDrop} multiple={false} maxSize={1000000000}>
             {({ getRootProps, getInputProps }) => (
               <DropMediaDiv {...getRootProps()}>
                 <input {...getInputProps()} />

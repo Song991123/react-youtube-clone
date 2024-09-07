@@ -1,4 +1,3 @@
-import cookieParser from 'cookie-parser';
 import User from '../models/User.js';
 
 /**
