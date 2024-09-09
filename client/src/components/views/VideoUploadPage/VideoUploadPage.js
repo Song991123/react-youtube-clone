@@ -59,6 +59,9 @@ function VideoUploadPage() {
   const [Description, setDescription] = useState("");
   const [Private, setPrivate] = useState(0);
   const [Catetory, setCatetory] = useState("Film & Animation");
+  const [FilePath, setFilePath] = useState("");
+  const [Duration, setDuration] = useState("");
+  const [ThumbnailPath, setThumbnailPath] = useState("");
 
   const onTitleChange = (e) => {setVideoTitle(e.currentTarget.value)};
   const onDescriptionChange = (e) => {setDescription(e.currentTarget.value)};
@@ -80,8 +83,30 @@ function VideoUploadPage() {
       // 성공적으로 업로드된 후 처리할 코드
       console.log('File uploaded successfully:', response.data);
 
-    } catch (error) {
-      console.error('Error uploading file:', error);
+      let variable = {
+        url : response.data.url,
+        fileName: response.data.fileName
+      }
+      setFilePath(response.data.url);
+
+      // 썸네일 생성 ----------------
+      try {
+        let thumbnailResponse =  await axios.post('/api/video/thumbnail', variable);
+        console.log('Thumbnail created successfully:', thumbnailResponse.data);
+        setDuration(thumbnailResponse.data.fileDuration);
+        setThumbnailPath(thumbnailResponse.data.url);
+
+      } catch (thumbnailError) {
+        console.error('Error creating thumbnail:', thumbnailError);
+        alert('썸네일 생성에 실패했습니다.');
+      }
+
+      
+
+
+    } catch (uploadError) {
+      console.error('Error uploading file:', uploadError);
+      alert("파일 업로드에 실패했습니다.");
     }
   }
 
@@ -102,9 +127,12 @@ function VideoUploadPage() {
             )}
           </Dropzone>
           {/* Thumbnail */}
-          <div>
-            <img src='' alt="" />
-          </div>
+          {ThumbnailPath && 
+            <div>
+              <img src={`http://localhost:5000/${ThumbnailPath}`} alt="thumbnail" />
+            </div>
+          }
+
         </MediaDiv>
 
         {/* Title */}
